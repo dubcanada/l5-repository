@@ -104,8 +104,6 @@ class RepositoryCommand extends Command
         try {
             (new RepositoryEloquentGenerator([
                 'name'      => $this->argument('name'),
-                'rules'     => $this->option('rules'),
-                'validator' => $this->option('validator'),
                 'force'     => $this->option('force'),
                 'model'     => $model
             ]))->run();
@@ -149,20 +147,6 @@ class RepositoryCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'The fillable attributes.',
-                null
-            ],
-            [
-                'rules',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'The rules of validation attributes.',
-                null
-            ],
-            [
-                'validator',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Adds validator reference to the repository.',
                 null
             ],
             [

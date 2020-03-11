@@ -5,12 +5,9 @@ $NAMESPACE$
 use Illuminate\Http\Request;
 
 use $APPNAME$Http\Requests;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 use $APPNAME$Http\Requests\$CLASS$CreateRequest;
 use $APPNAME$Http\Requests\$CLASS$UpdateRequest;
 $REPOSITORY$
-$VALIDATOR$
 
 /**
  * Class $CONTROLLER$Controller.
@@ -25,20 +22,13 @@ class $CONTROLLER$Controller extends Controller
     protected $repository;
 
     /**
-     * @var $CLASS$Validator
-     */
-    protected $validator;
-
-    /**
      * $CONTROLLER$Controller constructor.
      *
      * @param $CLASS$Repository $repository
-     * @param $CLASS$Validator $validator
      */
-    public function __construct($CLASS$Repository $repository, $CLASS$Validator $validator)
+    public function __construct($CLASS$Repository $repository)
     {
         $this->repository = $repository;
-        $this->validator  = $validator;
     }
 
     /**
@@ -68,37 +58,22 @@ class $CONTROLLER$Controller extends Controller
      *
      * @return \Illuminate\Http\Response
      *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
     public function store($CLASS$CreateRequest $request)
     {
-        try {
+        $$SINGULAR$ = $this->repository->create($request->all());
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
+        $response = [
+            'message' => '$CLASS$ created.',
+            'data'    => $$SINGULAR$->toArray(),
+        ];
 
-            $$SINGULAR$ = $this->repository->create($request->all());
+        if ($request->wantsJson()) {
 
-            $response = [
-                'message' => '$CLASS$ created.',
-                'data'    => $$SINGULAR$->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-            if ($request->wantsJson()) {
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+            return response()->json($response);
         }
+
+        return redirect()->back()->with('message', $response['message']);
     }
 
     /**
@@ -143,40 +118,22 @@ class $CONTROLLER$Controller extends Controller
      * @param  string            $id
      *
      * @return Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
     public function update($CLASS$UpdateRequest $request, $id)
     {
-        try {
+        $$SINGULAR$ = $this->repository->update($request->all(), $id);
 
-            $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
+        $response = [
+            'message' => '$CLASS$ updated.',
+            'data'    => $$SINGULAR$->toArray(),
+        ];
 
-            $$SINGULAR$ = $this->repository->update($request->all(), $id);
+        if ($request->wantsJson()) {
 
-            $response = [
-                'message' => '$CLASS$ updated.',
-                'data'    => $$SINGULAR$->toArray(),
-            ];
-
-            if ($request->wantsJson()) {
-
-                return response()->json($response);
-            }
-
-            return redirect()->back()->with('message', $response['message']);
-        } catch (ValidatorException $e) {
-
-            if ($request->wantsJson()) {
-
-                return response()->json([
-                    'error'   => true,
-                    'message' => $e->getMessageBag()
-                ]);
-            }
-
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
+            return response()->json($response);
         }
+
+        return redirect()->back()->with('message', $response['message']);
     }
 
 

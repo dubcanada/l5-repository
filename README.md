@@ -33,11 +33,6 @@ You want to know a little more about the Repository pattern? [Read this great ar
 - <a href="#cache">Cache</a>
     - <a href="#cache-usage">Usage</a>
     - <a href="#cache-config">Config</a>
-- <a href="#validators">Validators</a>
-    - <a href="#using-a-validator-class">Using a Validator Class</a>
-        - <a href="#create-a-validator">Create a Validator</a>
-        - <a href="#enabling-validator-in-your-repository-1">Enabling Validator in your Repository</a>
-    - <a href="#defining-rules-in-the-repository">Defining rules in the repository</a>
 - <a href="#presenters">Presenters</a>
     - <a href="#fractal-presenter">Fractal Presenter</a>
         - <a href="#create-a-presenter">Create a Fractal Presenter</a>
@@ -209,7 +204,6 @@ You must first configure the storage location of the repository files. By defaul
             'interfaces'   => 'Repositories',
             'transformers' => 'Transformers',
             'presenters'   => 'Presenters',
-            'validators'   => 'Validators',
             'controllers'  => 'Http/Controllers',
             'provider'     => 'RepositoryServiceProvider',
             'criteria'     => 'Criteria',
@@ -239,7 +233,6 @@ Additionally, you may wish to customize where your generated classes end up bein
             'interfaces'=>'Contracts\\Repositories',
             'transformers'=>'Transformers',
             'presenters'=>'Presenters'
-            'validators'   => 'Validators',
             'controllers'  => 'Http/Controllers',
             'provider'     => 'RepositoryServiceProvider',
             'criteria'     => 'Criteria',
@@ -255,7 +248,7 @@ To generate everything you need for your Model, run this command:
 php artisan make:entity Post
 ```
 
-This will create the Controller, the Validator, the Model, the Repository, the Presenter and the Transformer classes.
+This will create the Controller, the Model, the Repository, the Presenter and the Transformer classes.
 It will also create a new service provider that will be used to bind the Eloquent Repository with its corresponding Repository Interface.
 To load it, just add this to your AppServiceProvider@register method:
 
@@ -281,12 +274,6 @@ Added fields that are fillable
 
 ```terminal
 php artisan make:repository "Blog\Post" --fillable="title,content"
-```
-
-To add validations rules directly with your command you need to pass the `--rules` option and create migrations as well:
-
-```terminal
-php artisan make:entity Cat --fillable="title:string,content:text" --rules="title=>required|min:2, content=>sometimes|min:10"
 ```
 
 The command will also create your basic RESTfull controller so just add this line into your `routes.php` file and you will have a basic CRUD:
@@ -864,125 +851,6 @@ class PostRepository extends BaseRepository implements CacheableInterface {
 ```
 
 The cacheable methods are : all, paginate, find, findByField, findWhere, getByCriteria
-
-### Validators
-
-Requires [prettus/laravel-validator](https://github.com/prettus/laravel-validator). `composer require prettus/laravel-validator`
-
-Easy validation with `prettus/laravel-validator`
-
-[For more details click here](https://github.com/prettus/laravel-validator)
-
-#### Using a Validator Class
-
-##### Create a Validator
-
-In the example below, we define some rules for both creation and edition
-
-```php
-use \Prettus\Validator\LaravelValidator;
-
-class PostValidator extends LaravelValidator {
-
-    protected $rules = [
-        'title' => 'required',
-        'text'  => 'min:3',
-        'author'=> 'required'
-    ];
-
-}
-```
-
-To define specific rules, proceed as shown below:
-
-```php
-use \Prettus\Validator\Contracts\ValidatorInterface;
-use \Prettus\Validator\LaravelValidator;
-
-class PostValidator extends LaravelValidator {
-
-    protected $rules = [
-        ValidatorInterface::RULE_CREATE => [
-            'title' => 'required',
-            'text'  => 'min:3',
-            'author'=> 'required'
-        ],
-        ValidatorInterface::RULE_UPDATE => [
-            'title' => 'required'
-        ]
-   ];
-
-}
-```
-
-##### Enabling Validator in your Repository
-
-```php
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-
-class PostRepository extends BaseRepository {
-
-    /**
-     * Specify Model class name
-     *
-     * @return mixed
-     */
-    function model(){
-       return "App\\Post";
-    }
-
-    /**
-     * Specify Validator class name
-     *
-     * @return mixed
-     */
-    public function validator()
-    {
-        return "App\\PostValidator";
-    }
-}
-```
-
-#### Defining rules in the repository
-
-Alternatively, instead of using a class to define its validation rules, you can set your rules directly into the rules repository property, it will have the same effect as a Validation class.
-
-```php
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Validator\Contracts\ValidatorInterface;
-
-class PostRepository extends BaseRepository {
-
-    /**
-     * Specify Validator Rules
-     * @var array
-     */
-     protected $rules = [
-        ValidatorInterface::RULE_CREATE => [
-            'title' => 'required',
-            'text'  => 'min:3',
-            'author'=> 'required'
-        ],
-        ValidatorInterface::RULE_UPDATE => [
-            'title' => 'required'
-        ]
-   ];
-
-    /**
-     * Specify Model class name
-     *
-     * @return mixed
-     */
-    function model(){
-       return "App\\Post";
-    }
-
-}
-```
-
-Validation is now ready. In case of a failure an exception will be given of the type: *Prettus\Validator\Exceptions\ValidatorException*
 
 ### Presenters
 

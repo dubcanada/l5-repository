@@ -92,7 +92,6 @@ class ControllerGenerator extends Generator
             'controller' => $this->getControllerName(),
             'plural'     => $this->getPluralName(),
             'singular'   => $this->getSingularName(),
-            'validator'  => $this->getValidator(),
             'repository' => $this->getRepository(),
             'appname'    => $this->getAppNamespace(),
         ]);
@@ -106,25 +105,6 @@ class ControllerGenerator extends Generator
     public function getSingularName()
     {
         return Str::singular(lcfirst(ucwords($this->getClass())));
-    }
-
-    /**
-     * Gets validator full class name
-     *
-     * @return string
-     */
-    public function getValidator()
-    {
-        $validatorGenerator = new ValidatorGenerator([
-            'name' => $this->name,
-        ]);
-
-        $validator = $validatorGenerator->getRootNamespace() . '\\' . $validatorGenerator->getName();
-
-        return 'use ' . str_replace([
-            "\\",
-            '/'
-        ], '\\', $validator) . 'Validator;';
     }
 
 
