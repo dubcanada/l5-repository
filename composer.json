@@ -1,5 +1,5 @@
 {
-  "name": "prettus/l5-repository",
+  "name": "dubcanada/l5-repository",
   "description": "Laravel 5 - Repositories to  the database layer",
   "keywords": ["laravel", "repository", "eloquent", "model", "cache"],
   "license": "MIT",
@@ -8,6 +8,12 @@
       "name": "Anderson Andrade",
       "homepage": "http://andersonandra.de",
       "email": "contato@andersonandra.de",
+      "role": "Developer"
+    },
+    {
+      "name": "Steven Verbeek",
+      "homepage": "http://stevenverbeek.com",
+      "email": "dubcanada@gmail.com",
       "role": "Developer"
     }
   ],
